@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoalQuiz - مسابقات كرة القدم</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f3f4f6;
+            color: #333;
+        }
+        header {
+            background-color: #28a745;
+            color: white;
+            padding: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #218838;
+        }
+        .hidden {
+            display: none;
+        }
+        .question {
+            margin: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <!-- الصفحة الرئيسية -->
+    <header>
+        <h1>GoalQuiz</h1>
+        <p>هل أنت خبير كرة القدم؟ جرب حظك الآن!</p>
+    </header>
+    <main id="home-section">
+        <h2>ابدأ المسابقة الآن</h2>
+        <button class="btn" onclick="startQuiz()">ابدأ المسابقة</button>
+    </main>
+
+    <!-- قسم المسابقة -->
+    <div id="quiz-section" class="hidden">
+        <h1>مسابقة كرة القدم</h1>
+        <div class="question" id="question"></div>
+        <div id="answers"></div>
+    </div>
+
+    <script>
+        const homeSection = document.getElementById("home-section");
+        const quizSection = document.getElementById("quiz-section");
+
+        const questions = [
+            { question: "من هو اللاعب الذي فاز بأكبر عدد من الألقاب في الدوري الإنجليزي الممتاز؟", answers: ["كريستيانو رونالدو", "واين روني", "سيرجيو أجويرو", "ريكي هاتون"], correct: 0 },
+            { question: "من هو اللاعب الذي سجل أكبر عدد من الأهداف في تاريخ كأس العالم؟", answers: ["بيليه", "ميسي", "كريستيانو رونالدو", "ميروسلاف كلوزه"], correct: 3 },
+            { question: "أي لاعب يعتبر 'الهداف التاريخي' لمنتخب البرازيل؟", answers: ["نيمار", "رونالدو", "بيليه", "روماريو"], correct: 2 },
+            { question: "من هو اللاعب الذي فاز بأكبر عدد من الكرات الذهبية؟", answers: ["كريستيانو رونالدو", "ميسي", "زين الدين زيدان", "لوكا مودريتش"], correct: 1 },
+            { question: "أي لاعب سجل أكبر عدد من الأهداف في تاريخ دوري أبطال أوروبا؟", answers: ["كريستيانو رونالدو", "ليونيل ميسي", "روبرتو كارلوس", "كارل هاينز رومينيغه"], correct: 0 },
+            
+            { question: "أي نادي فاز بأكبر عدد من بطولات دوري أبطال أوروبا؟", answers: ["برشلونة", "ريال مدريد", "بايرن ميونيخ", "ميلان"], correct: 1 },
+            { question: "أي نادي فاز بأكبر عدد من البطولات المحلية في إنجلترا؟", answers: ["مانشستر يونايتد", "مانشستر سيتي", "ليفربول", "أرسنال"], correct: 0 },
+            { question: "أي نادي يُلقب بـ 'الشياطين الحمر'؟", answers: ["مانشستر سيتي", "مانشستر يونايتد", "تشيلسي", "توتنهام هوتسبر"], correct: 1 },
+            { question: "أين يقع مقر نادي يوفنتوس؟", answers: ["ميلانو", "تورينو", "روما", "نابولي"], correct: 1 },
+            { question: "أي نادي يُلقب بـ 'البارسا'؟", answers: ["ريال مدريد", "برشلونة", "أتلتيكو مدريد", "إشبيلية"], correct: 1 },
+
+            { question: "في أي عام أُقيم أول كأس عالم لكرة القدم؟", answers: ["1920", "1930", "1940", "1950"], correct: 1 },
+            { question: "من فاز بكأس العالم لعام 2018؟", answers: ["ألمانيا", "الأرجنتين", "فرنسا", "البرازيل"], correct: 2 },
+            { question: "أي منتخب فاز بأكبر عدد من بطولات كأس أمم إفريقيا؟", answers: ["مصر", "الكاميرون", "نيجيريا", "غانا"], correct: 0 },
+            { question: "ما هي الدولة التي استضافت كأس العالم 2014؟", answers: ["البرازيل", "ألمانيا", "فرنسا", "جنوب أفريقيا"], correct: 0 },
+            { question: "أي منتخب فاز بكأس القارات 2017؟", answers: ["ألمانيا", "البرازيل", "المكسيك", "تشيلي"], correct: 0 },
+
+            { question: "في أي عام تم تأسيس نادي مانشستر يونايتد؟", answers: ["1882", "1902", "1925", "1895"], correct: 1 },
+            { question: "من هو المدرب الذي فاز بأكبر عدد من ألقاب الدوري الإنجليزي الممتاز؟", answers: ["أليكس فيرغسون", "بيب غوارديولا", "جوزيه مورينيو", "أرسنال فينغر"], correct: 0 },
+            { question: "ما هو أول نادي فاز بدوري أبطال أوروبا في عام 1956؟", answers: ["ريال مدريد", "ميلان", "برشلونة", "يوفنتوس"], correct: 0 },
+            { question: "من هو أول لاعب سجل هدفًا في تاريخ الدوري الإنجليزي الممتاز؟", answers: ["ألان شيرار", "نيلس ليدهولم", "هنري", "فرانك لامبارد"], correct: 1 },
+            { question: "في أي سنة فاز ريال مدريد بأول دوري أبطال أوروبا؟", answers: ["1956", "1960", "1955", "1964"], correct: 0 },
+
+            { question: "أي نادي يُلقب بـ 'البلوز'؟", answers: ["تشيلسي", "مانشستر يونايتد", "ريال مدريد", "أرسنال"], correct: 0 },
+            { question: "أي فريق فاز بأكبر عدد من بطولات كأس الملك الإسباني؟", answers: ["برشلونة", "ريال مدريد", "أتلتيكو مدريد", "فالنسيا"], correct: 0 },
+            { question: "ما هو اللقب الذي يُطلق على لاعبي منتخب الأرجنتين؟", answers: ["التانغو", "السيليساو", "الشياطين الحمر", "الأسود الثلاثة"], correct: 0 },
+
+            { question: "ما هو أكبر ملعب في العالم من حيث السعة؟", answers: ["ملعب كامب نو", "ملعب ماراكانا", "ملعب ملبورن كريكت جراوند", "ملعب سوكر سيتي"], correct: 1 },
+            { question: "أي دولة فازت بأكبر عدد من كؤوس العالم؟", answers: ["ألمانيا", "البرازيل", "الأرجنتين", "إيطاليا"], correct: 1 },
+            { question: "من هو أسرع لاعب في تاريخ كرة القدم؟", answers: ["كريستيانو رونالدو", "ألبيرتو إكوادو", "دوجلاس كوستا", "كيليان مبابي"], correct: 3 },
+
+            { question: "أي منتخب فاز بكأس الكونكاكاف 2019؟", answers: ["المكسيك", "الولايات المتحدة", "كوستاريكا", "كندا"], correct: 0 },
+            { question: "أي فريق فاز بالدوري الإيطالي في الموسم 2020/2021؟", answers: ["يوفنتوس", "ميلان", "إنتر ميلان", "روما"], correct: 2 },
+            { question: "من هو النادي الذي فاز بأكبر عدد من بطولات الدوري المصري الممتاز؟", answer: ["الاهلي","الزمالك","الاسماعيلي","المصري"],correct: 0},
+            { question: "في أي عام تأسس الدوري المصري الممتاز؟", answer: ["1905","1948","1950","1960"],correct: 1},
+            { question: "من هو اللاعب الذي سجل أكبر عدد من الأهداف في تاريخ الدوري المصري الممتاز؟", answer: ["أحمد حسام ميدو","محمود الخطيب","عماد متعب","حسام حسن"],correct: 0},
+            { question: "أين تم تنظيم أول موسم للدوري المصري الممتاز؟", answer: ["بورسعيد","الجيزة","الإسكندرية","القاهرة"],correct:0},
+            { question: "أي نادي فاز بأكبر عدد من ألقاب كأس مصر؟", answer: ["سموحة","الاتحاد السكندري","الزمالك","الأهلي"],correct: 1},
+            { question: "أي من الأندية المصرية يُلقب بـ 'القلعة الحمراء'", answer: ["انبي","الإسماعيلي","الزمالك","الأهلي"],correct:0},
+            { question: "من هو الهداف التاريخي لنادي الزمالك", answer: ["عبد الحليم علي","محمود عبد الرازق 'شيكابالا'","حسن شحاتة","أحمد فتحي"],correct: 2},
+            { question: "أي نادي يُلقب بـ 'الفارس الأبيض'؟", answer: ["الإسماعيلي","المصري","الأهلي","الزمالك"],correct: 0},
+            { question: "من هو أكثر لاعب خوضًا للمباريات مع نادي الأهلي؟", answer: ["عماد متعب","محمد أبو تريكة","حسام عاشور","محمود الخطيب"],correct: 1},
+            { question: "أي من الأندية المصرية فاز بأكبر عدد من الألقاب القارية (دوري أبطال إفريقيا)؟", answer: ["الاتحاد السكندري","الإسماعيلي","الزمالك","الأهلي"],correct: 0},
+            { question: "من هو النادي المصري الذي يُلقب بـ 'دراويش'؟", answer: ["سموحة","الزمالك","الأهلي","الإسماعيلي"],correct: 0},
+            { question: "أي نادي مصري يُلقب بـ 'الفريق البورسعيدي'؟", answer: ["وادي دجلة","الاتحاد السكندري","طنطا","المصري"],correct: 0},
+            { question: "من هو المدرب الذي قاد الأهلي للفوز بأكبر عدد من الألقاب القارية؟", answer: ["طارق يحيى","البرتغالي مارتن يول","حسام البدري","مانويل جوزيه"],correct: 0},
+            { question: "في أي موسم فاز الأهلي بالدوري المصري للمرة الأولى؟", answer: ["1907","1948","1956","1965"],correct: 0},
+            { question: "أي من الأندية المصرية يلقب بـ 'أبناء القلعة'؟", answer: ["إنبي","سموحة","الزمالك","الأهلي"],correct: 0},
+            { question: "من هو الهداف التاريخي لنادي الأهلي؟", answer: ["محمد أبو تريكة","عماد متعب","حسام حسن","محمود الخطيب"],correct: 3},
+            { question: "أي نادي مصري فاز بكأس الكونفدرالية الإفريقية؟", answer: ["الإسماعيلي","المصري البورسعيدي","الأهلي","الزمالك"],correct:0 },
+            { question: "من هو المدرب الذي قاد الزمالك للفوز بكأس دوري أبطال إفريقيا عام 2002؟", answer: ["ميتشو","باتريس كارتيرون","شوقي غريب","ديدييه ديشامب"],correct: 2},
+            { question: "أي فريق مصري فاز بكأس السوبر المصري عام 2014؟", answer: ["سموحة","الاتحاد السكندري","الزمالك","الأهلي"],correct: 0},
+            { question: "من هو لاعب الأهلي الذي تم اختياره أفضل لاعب في إفريقيا لعام 2020؟", answer: ["علي معلول","حسين الشحات","محمد الشناوي","محمد صلاح"],correct: 1},
+            { question: "من هو الهداف التاريخي لنادي ريال مدريد الإسباني؟", answer: ["كريم بنزيما","زين الدين زيدان","راؤول غونزاليس","كريستيانو رونالدو"],correct:0},
+            { question: "أي من الأندية المصرية حصل على أكبر عدد من بطولات الدوري المصري الممتاز؟", answer: ["المصري البورسعيدي","الإسماعيلي","الزمالك","الأهلي"],correct: 0},
+            { question: "من هو المدرب الذي قاد فريق برشلونة للفوز بدوري أبطال أوروبا في 2009؟", answer: ["فرانك ريكارد","تاتا مارتينو","لويس إنريكي","بيب غوارديولا"],correct: 0},
+            { question: "أي من الأندية المصرية فاز بأكبر عدد من ألقاب كأس مصر؟", answer: ["إنبي","المصري البورسعيدي","الزمالك","الأهلي"],correct:0 },
+            { question: "من هو اللاعب الذي سجل أكبر عدد من الأهداف في تاريخ الدوري الإنجليزي الممتاز؟", answer: ["محمد صلاح","كريستيانو رونالدو","ألان شيرر","واين روني"],correct: 1},
+            { question: "أي نادي إيطالي يُلقب بـ 'اليوفي'؟", answer: ["روما","يوفنتوس","ميلان","إنتر ميلان"],correct:2},
+
+            
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        function startQuiz() {
+            homeSection.classList.add("hidden");
+            quizSection.classList.remove("hidden");
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const questionContainer = document.getElementById("question");
+            const answersContainer = document.getElementById("answers");
+            questionContainer.textContent = questions[currentQuestion].question;
+            answersContainer.innerHTML = "";
+            questions[currentQuestion].answers.forEach((answer, index) => {
+                const button = document.createElement("button");
+                button.textContent = answer;
+                button.onclick = () => checkAnswer(index);
+                answersContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(index) {
+            if (index === questions[currentQuestion].correct) {
+                score++;
+                alert("إجابة صحيحة!");
+            } else {
+                alert("إجابة خاطئة!");
+            }
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        function endQuiz() {
+            alert(`انتهت المسابقة! مجموعك: ${score}/${questions.length}`);
+            // إعادة تعيين المسابقة
+            currentQuestion = 0;
+            score = 0;
+            quizSection.classList.add("hidden");
+            homeSection.classList.remove("hidden");
+        }
+    </script>
+</body>
+</html>
